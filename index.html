@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happiest Eve 💙</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  *{ margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+  body { background: linear-gradient(135deg, #ffe6f0, #e6f0ff); overflow: hidden; }
+  .home { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+  h1 { color: #ff4d88; font-size: 2.6rem; margin-bottom: 10px; }
+  .countdown { margin-top: 25px; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); font-size: 1.2rem; min-width: 280px; }
+  .age { margin-top: 10px; color: #4d79ff; font-weight: bold; }
+  .question { margin-top: 35px; font-size: 1.3rem; font-weight: 500; color: #333; }
+  .buttons { margin-top: 25px; display: flex; gap: 20px; justify-content: center; align-items: center; min-height: 60px; }
+  .btn { padding: 12px 30px; border-radius: 30px; border: none; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+  .yes { background: #ff4d88; color: white; box-shadow: 0 4px 15px rgba(255, 77, 136, 0.3); }
+  .no { background: #ccc; color: #333; }
+  #slideshow-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); display: none; justify-content: center; align-items: center; z-index: 1000; flex-direction: column; }
+  #slideshow-image { max-width: 85%; max-height: 70vh; border: 5px solid white; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 255, 255, 0.2); transition: opacity 0.8s ease-in-out; }
+  .slideshow-text { color: white; margin-top: 20px; font-size: 1.5rem; font-style: italic; }
+  #heart-container { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+  .heart { position: absolute; font-size: 26px; animation: explode 1.2s ease-out forwards; }
+  @keyframes explode { from { transform: scale(0); opacity: 1; } to { transform: scale(2) translateY(-150px); opacity: 0; } }
+</style>
+</head>
+
+<body>
+
+<audio id="mySong" src="song.mpeg" preload="auto"></audio>
+<div id="heart-container"></div>
+
+<div id="slideshow-overlay">
+  <img id="slideshow-image" src="" alt="Our Memory">
+  <div class="slideshow-text" id="slideshow-caption">Building memories... 💙</div>
+</div>
+
+<section class="home">
+  <h1>Happiest Eve ✨</h1>
+  <h1>Gila Rajma (Mr. Rawat) 💙</h1>
+  <div class="countdown" id="countdown">Loading...<div class="age" id="age"></div></div>
+  <div class="question">Will you spend the rest of your birthdays with me? 💌</div>
+  <div class="buttons">
+    <button class="btn yes" onclick="goYes()">Yes 💙</button>
+    <button class="btn no" id="noBtn" onclick="shrinkNo()">No</button>
+  </div>
+</section>
+
+<script>
+const birthDate = new Date("2007-02-05T00:00:00");
+function updateCountdown() {
+  const now = new Date();
+  let nextBirthday = new Date(now.getFullYear(), 1, 5);
+  if (now > nextBirthday) nextBirthday.setFullYear(now.getFullYear() + 1);
+  const diff = nextBirthday - now;
+  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const m = Math.floor((diff / (1000 * 60)) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+  document.getElementById("countdown").innerHTML = `🎂 Your day in<br><b>${d}d ${h}h ${m}m ${s}s</b><div class="age" id="age"></div>`;
+  let age = now.getFullYear() - birthDate.getFullYear();
+  if (now < new Date(now.getFullYear(), 1, 5)) age--;
+  document.getElementById("age").innerText = `Turning ${age + 1} this birthday 💙`;
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+let noClicks = 0;
+function shrinkNo() {
+  noClicks++;
+  const noBtn = document.getElementById("noBtn");
+  if (noClicks === 1) noBtn.style.transform = "scale(0.7)";
+  else if (noClicks === 2) noBtn.style.transform = "scale(0.4)";
+  else if (noClicks >= 3) noBtn.style.display = "none";
+}
+
+const memories = [
+  { url: "mayank.jpeg", caption: "i am in love with this innocent face⭐" },
+  { url: "manku.jpeg", caption: "My favorite smile😊" },
+  { url: "mintu.jpeg", caption: "your big eyes holds universe of emotions🌎" }
+];
+
+function goYes() {
+  const song = document.getElementById("mySong");
+  song.play();
+
+  // Gaana save karne ka logic (har 500ms pe)
+  setInterval(() => {
+    localStorage.setItem("songTime", song.currentTime);
+  }, 500);
+
+  const container = document.getElementById("heart-container");
+  for (let i = 0; i < 35; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.top = Math.random() * window.innerHeight + "px";
+    container.appendChild(heart);
+    setTimeout(() => heart.remove(), 1200);
+  }
+
+  setTimeout(() => {
+    const overlay = document.getElementById("slideshow-overlay");
+    const imgElement = document.getElementById("slideshow-image");
+    const captionElement = document.getElementById("slideshow-caption");
+    overlay.style.display = "flex";
+
+    let currentImg = 0;
+    function showNextImage() {
+      if (currentImg < memories.length) {
+        imgElement.style.opacity = 0;
+        setTimeout(() => {
+          imgElement.src = memories[currentImg].url;
+          captionElement.innerText = memories[currentImg].caption;
+          imgElement.style.opacity = 1;
+          currentImg++;
+          setTimeout(showNextImage, 3000); 
+        }, 800);
+      } else {
+        window.location.href = "surprise.html";
+      }
+    }
+    showNextImage();
+  }, 1000);
+}
+</script>
+</body>
+</html>
